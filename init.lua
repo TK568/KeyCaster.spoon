@@ -166,7 +166,10 @@ function obj:_measure(text)
     return avg * #tostring(text)
 end
 
-local specialsByName = {
+-- ===============
+-- Key Symbol Mappings (Customizable)
+-- ===============
+local defaultSpecialKeys = {
     ["return"]        = "↩︎",
     ["enter"]         = "⌤",
     ["escape"]        = "⎋",
@@ -184,7 +187,7 @@ local specialsByName = {
     ["down"]          = "↓",
 }
 
-local punctuationByName = {
+local defaultPunctuationKeys = {
     ["comma"]        = ",",
     ["period"]       = ".",
     ["slash"]        = "/",
@@ -197,6 +200,9 @@ local punctuationByName = {
     ["leftbracket"]  = "[",
     ["rightbracket"] = "]",
 }
+
+obj.specialKeys = {}
+obj.punctuationKeys = {}
 
 local function isFunctionKey(name)
     if not name then return false end
@@ -373,10 +379,14 @@ function obj:_formatLabel(event)
 
     local keyName = self._reverseKeycodes[event:getKeyCode()]
     local pretty
-    if specialsByName[keyName] then
-        pretty = specialsByName[keyName]
-    elseif punctuationByName[keyName] then
-        pretty = punctuationByName[keyName]
+    if type(self.specialKeys) == "table" and self.specialKeys[keyName] then
+        pretty = self.specialKeys[keyName]
+    elseif defaultSpecialKeys[keyName] then
+        pretty = defaultSpecialKeys[keyName]
+    elseif type(self.punctuationKeys) == "table" and self.punctuationKeys[keyName] then
+        pretty = self.punctuationKeys[keyName]
+    elseif defaultPunctuationKeys[keyName] then
+        pretty = defaultPunctuationKeys[keyName]
     elseif isFunctionKey(keyName) then
         pretty = string.upper(keyName)
     elseif #chars > 0 then
